@@ -8,8 +8,7 @@ RUN bun install --frozen-lockfile
 
 COPY . .
 
-RUN bunx prisma generate
-
 EXPOSE 3000
 
-CMD ["bun", "run", "start"]
+# generate Prisma ตอน container run
+CMD ["sh", "-c", "bunx prisma generate && bun run start"]
