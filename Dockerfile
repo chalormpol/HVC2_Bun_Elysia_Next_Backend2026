@@ -8,6 +8,8 @@ RUN bun install --frozen-lockfile
 
 COPY . .
 
+RUN apt-get update -y && apt-get install -y openssl 
+
 EXPOSE 3000
 
 # generate Prisma ตอน container run
