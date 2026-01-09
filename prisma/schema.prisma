@@ -1,0 +1,140 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  admin
+  employee
+  user
+}
+
+enum UserStatus {
+  active
+  inactive
+  banned
+}
+
+model User {
+  id       Int     @id @default(autoincrement())
+  email    String  @unique
+  password String?
+  fname    String?
+  lname    String?
+  phone    String?
+  image    String?
+
+  role   UserRole   @default(user) // admin | employee | user
+  status UserStatus @default(active) // active | banned | deleted
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  position_id Int?
+  position    Position? @relation(fields: [position_id], references: [id])
+  bookings    Booking[]
+
+  @@index([role, status])
+}
+
+enum PositionStatus {
+  active
+  inactive
+}
+
+model Position {
+  id     Int            @id @default(autoincrement())
+  name   String         @unique
+  status PositionStatus @default(active)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  users User[]
+
+  @@index([name, status])
+}
+
+enum RoomType {
+  deluxe
+  suite
+  presidential
+  standard
+}
+
+enum RoomStatus {
+  active
+  inactive
+}
+
+model Room {
+  id          Int        @id @default(autoincrement())
+  title       String
+  price       Int
+  type        RoomType   @default(standard)
+  label       String?
+  description String?
+  image       String?
+  status      RoomStatus @default(active)
+
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  bookings   Booking[]
+
+  @@index([title, status])
+}
+
+enum BookingStatus {
+  pending
+  confirmed
+  cancelled
+  completed
+}
+
+model Booking {
+  id      Int  @id @default(autoincrement())
+  user_id Int
+  user    User @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  room_id Int
+  room    Room @relation(fields: [room_id], references: [id], onDelete: Restrict)
+
+  check_in  DateTime
+  check_out DateTime
+  nights    Int
+
+  price_per_night Int
+  total_price     Int
+
+  status BookingStatus @default(pending)
+  // pending     // ผู้ใช้กดจอง แต่ยังไม่ชำระ
+  // confirmed   // ชำระเงินแล้ว
+  // cancelled   // ยกเลิก
+  // completed   // เข้าพักเสร็จ
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([room_id, check_in, check_out])
+}
+
+model Contact {
+  id      Int    @id @default(autoincrement())
+  name    String
+  email   String
+  message String
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([name, email])
+}
