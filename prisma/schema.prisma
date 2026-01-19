@@ -75,6 +75,8 @@ enum RoomType {
 enum RoomStatus {
   active
   inactive
+  banned
+  cleaned
 }
 
 model Room {

@@ -14,6 +14,15 @@ export const rooms = new Elysia()
   .put("/api/rooms/update/:id", async ({ request, params }) => {
     return RoomController.updateRoom({ request, params });
   })
+  .put("/api/rooms/allow/:id", async ({ params }) => {
+    return RoomController.allowRoom({ params });
+  })
+  .put("/api/rooms/banned/:id", async ({ params }) => {
+    return RoomController.bannedRoom({ params });
+  })
   .put("/api/rooms/remove/:id", async ({ params }) => {
     return RoomController.deleteRoom({ params });
+  })
+  .put("/api/rooms/cleaned/:id", async ({ params }) => {
+    return RoomController.cleanedRoom({ params });
   });

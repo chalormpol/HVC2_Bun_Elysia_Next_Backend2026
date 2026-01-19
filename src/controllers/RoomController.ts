@@ -16,7 +16,7 @@ export const RoomController = {
           status: true,
         },
         where: {
-          status: "active",
+          status: { in: ["active", "banned", "cleaned"] },
         },
         orderBy: {
           id: "asc",
@@ -140,6 +140,21 @@ export const RoomController = {
       return { error: msg };
     }
   },
+  allowRoom: async ({ params }: { params: { id: string } }) => {
+    try {
+      const room = await prisma.room.update({
+        where: { id: Number(params.id) },
+        data: {
+          status: "active",
+        },
+      });
+      return { room };
+    } catch (error) {
+      console.error("ALLOW ROOM ERROR =>", error);
+      const msg = error instanceof Error ? error.message : String(error);
+      return { error: msg };
+    }
+  },
   deleteRoom: async ({ params }: { params: { id: string } }) => {
     try {
       const id = Number(params.id);
@@ -160,6 +175,36 @@ export const RoomController = {
       return { room };
     } catch (error) {
       console.error("DELETE ROOM ERROR =>", error);
+      const msg = error instanceof Error ? error.message : String(error);
+      return { error: msg };
+    }
+  },
+  bannedRoom: async ({ params }: { params: { id: string } }) => {
+    try {
+      const room = await prisma.room.update({
+        where: { id: Number(params.id) },
+        data: {
+          status: "banned",
+        },
+      });
+      return { room };
+    } catch (error) {
+      console.error("BAN ROOM ERROR =>", error);
+      const msg = error instanceof Error ? error.message : String(error);
+      return { error: msg };
+    }
+  },
+  cleanedRoom: async ({ params }: { params: { id: string } }) => {
+    try {
+      const room = await prisma.room.update({
+        where: { id: Number(params.id) },
+        data: {
+          status: "cleaned",
+        },
+      });
+      return { room };
+    } catch (error) {
+      console.error("CLEANED ROOM ERROR =>", error);
       const msg = error instanceof Error ? error.message : String(error);
       return { error: msg };
     }
